@@ -3,163 +3,181 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>CocinaGadget | gadgets cocina utensilios - Envío Rápido España</title>
-<meta name="description" content="Compra gadgets cocina utensilios con envío rápido a toda España. Potencia tu cocina con estilo y funcionalidad. Garantía y devolución incluida.">
-<meta name="keywords" content="gadgets cocina utensilios, comprar online, España, envío rápido, precio">
+<title>ChefTech | Gadgets Cocina Profesional - Envío Gratis</title>
+<meta name="description" content="Freidoras de aire, batidoras y gadgets de cocina profesional. Cocina fácil y sano. Envío gratis España.">
+<meta name="keywords" content="freidora aire, gadgets cocina, batidora profesional">
+<meta property="og:title" content="ChefTech - Cocina como un profesional">
+<meta property="og:description" content="Freidoras de aire, batidoras y gadgets de cocina profesional. Cocina fácil y sano. Envío gratis España.">
+<meta property="og:image" content="https://images.pexels.com/photos/6707687/pexels-photo-6707687.jpeg?auto=compress&cs=tinysrgb&h=650&w=940">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f8fafc}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px;max-width:1200px;margin:0 auto;padding:20px}
-.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center}
-.modal.active{display:flex}
-.modal-content{background:white;border-radius:20px;padding:32px;max-width:500px;width:90%;text-align:center}
+*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#e0e0e0}a{text-decoration:none;color:inherit}
+.nav{background:rgba(10,10,10,.95);backdrop-filter:blur(20px);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid rgba(255,255,255,.08)}
+.logo{font-size:28px;font-weight:900;background:linear-gradient(135deg,#ea580c,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nav-links{display:flex;gap:20px;align-items:center;font-size:14px;color:rgba(255,255,255,.7)}.nav-links span{display:flex;align-items:center;gap:4px}
+.hero{position:relative;height:70vh;min-height:500px;overflow:hidden;display:flex;align-items:center;justify-content:center}
+.hero-bg{position:absolute;inset:0;background:url('https://images.pexels.com/photos/6707687/pexels-photo-6707687.jpeg?auto=compress&cs=tinysrgb&h=650&w=940') center/cover;filter:brightness(.4)}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,10,10,.3) 0%,rgba(10,10,10,.8) 100%)}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:700px;padding:0 24px}
+.hero h1{font-size:clamp(36px,7vw,64px);font-weight:900;line-height:1.1;margin-bottom:16px;background:linear-gradient(135deg,#fff,#f97316);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{font-size:20px;color:rgba(255,255,255,.8);margin-bottom:32px}
+.hero-badges{display:flex;flex-wrap:wrap;justify-content:center;gap:12px}
+.hero-badge{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.15);padding:10px 20px;border-radius:50px;font-size:14px;font-weight:500}
+.trust-bar{background:#111;padding:20px;display:flex;justify-content:center;gap:40px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.05)}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:14px;color:rgba(255,255,255,.6)}.trust-item strong{color:#ea580c}
+.products-section{max-width:1200px;margin:0 auto;padding:60px 20px}
+.section-title{font-size:36px;font-weight:800;text-align:center;margin-bottom:8px}
+.section-sub{text-align:center;color:rgba(255,255,255,.5);margin-bottom:48px;font-size:16px}
+.products-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px}
+.product-card{background:#151515;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,.06);transition:transform .3s,box-shadow .3s}
+.product-card:hover{transform:translateY(-4px);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.product-img-wrap{position:relative;height:240px;overflow:hidden}.product-img-wrap img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
+.product-card:hover .product-img-wrap img{transform:scale(1.05)}
+.badge{position:absolute;top:12px;left:12px;background:#ef4444;color:white;padding:6px 14px;border-radius:20px;font-size:13px;font-weight:700}
+.badge-ship{position:absolute;top:12px;right:12px;background:rgba(0,0,0,.7);backdrop-filter:blur(10px);color:white;padding:6px 14px;border-radius:20px;font-size:12px}
+.product-info{padding:24px}.product-info h3{font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.3}
+.stars{margin-bottom:12px;display:flex;align-items:center;gap:6px}.star-icons{color:#f59e0b;font-size:16px;letter-spacing:1px}.review-count{color:rgba(255,255,255,.4);font-size:13px}
+.product-desc{color:rgba(255,255,255,.5);font-size:14px;line-height:1.6;margin-bottom:16px}
+.features{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:20px}
+.feat{background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);color:#f97316;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.prices{display:flex;align-items:baseline;gap:8px}.price{font-size:28px;font-weight:800;color:#ea580c}.original{font-size:16px;color:rgba(255,255,255,.3);text-decoration:line-through}
+.buy-btn{background:linear-gradient(135deg,#ea580c,#f97316);color:white;padding:12px 28px;border-radius:14px;font-size:15px;font-weight:700;transition:all .3s;white-space:nowrap}
+.buy-btn:hover{transform:scale(1.05);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+.guarantees{background:#111;padding:60px 20px;margin-top:60px}
+.guar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px;max-width:1000px;margin:0 auto}
+.guar-item{text-align:center;padding:24px}.guar-icon{font-size:40px;margin-bottom:12px}.guar-item h4{font-size:16px;font-weight:700;margin-bottom:8px}.guar-item p{font-size:13px;color:rgba(255,255,255,.5)}
+footer{background:#080808;padding:40px 20px;text-align:center;border-top:1px solid rgba(255,255,255,.05);color:rgba(255,255,255,.3);font-size:13px}footer a{color:#ea580c}
+@media(max-width:640px){.products-grid{grid-template-columns:1fr}.hero{min-height:400px;height:50vh}.price-row{flex-direction:column;align-items:stretch}.buy-btn{text-align:center}.nav-links{display:none}.trust-bar{gap:20px}}
 </style>
 </head>
 <body>
-<nav style="background:#2b2024;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100">
-  <div style="color:white;font-size:24px;font-weight:900">CocinaGadget</div>
-  <div style="display:flex;gap:16px;align-items:center">
-    <span style="color:rgba(255,255,255,.8);font-size:14px">🚚 Envío Gratis</span>
-    <span style="color:rgba(255,255,255,.8);font-size:14px">🔒 Pago Seguro</span>
+<nav class="nav">
+  <div class="logo">ChefTech</div>
+  <div class="nav-links">
+    <span>🚚 Envío Gratis 24-48h</span>
+    <span>🔒 Pago 100% Seguro</span>
+    <span>↩️ Devolución 30 días</span>
+    <span>📞 +34 613 225 666</span>
   </div>
 </nav>
-<div style="background:linear-gradient(135deg,#2b2024,#f77f00);color:white;padding:60px 20px;text-align:center">
-  <h1 style="font-size:clamp(32px,6vw,56px);font-weight:900;margin-bottom:16px">CocinaGadget</h1>
-  <p style="font-size:20px;opacity:.9;max-width:600px;margin:0 auto 24px">Potencia tu cocina con estilo y funcionalidad</p>
-  <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;font-size:14px">
-    <span style="background:rgba(255,255,255,.2);padding:8px 16px;border-radius:20px">✅ Envío 24-48h</span>
-    <span style="background:rgba(255,255,255,.2);padding:8px 16px;border-radius:20px">🔒 Pago Seguro</span>
-    <span style="background:rgba(255,255,255,.2);padding:8px 16px;border-radius:20px">↩️ 30 días devolución</span>
-    <span style="background:rgba(255,255,255,.2);padding:8px 16px;border-radius:20px">⭐ +500 clientes felices</span>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <h1>Cocina como un profesional</h1>
+    <p>Gadgets de cocina inteligentes que transforman tu forma de cocinar.</p>
+    <div class="hero-badges">
+      <span class="hero-badge">✅ Envío Gratis España</span>
+      <span class="hero-badge">⚡ Entrega 24-48h</span>
+      <span class="hero-badge">🛡️ Garantía 2 Años</span>
+      <span class="hero-badge">💳 Pago Seguro Stripe</span>
+    </div>
   </div>
+</section>
+<div class="trust-bar">
+  <div class="trust-item">📦 <strong>+2.400</strong> pedidos</div>
+  <div class="trust-item">⭐ <strong>4.8/5</strong> valoración</div>
+  <div class="trust-item">🇪🇸 <strong>Envío</strong> España</div>
+  <div class="trust-item">🔄 <strong>30 días</strong> devolución</div>
 </div>
-<div style="max-width:1200px;margin:40px auto;padding:0 20px">
-  <h2 style="font-size:28px;font-weight:900;color:#1a1a2e;margin-bottom:8px">Nuestros Productos</h2>
-  <p style="color:#666;margin-bottom:32px">Los mejores gadgets cocina utensilios con envío rápido a toda España</p>
-  <div class="grid">
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Cortador de verduras 5 piezas',29.99)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Cortador de verduras 5 piezas</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">29.99€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">41.99€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Cortador de verduras 5 piezas',29.99)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Tetera eléctrica con control de temperatura',39.99)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Tetera eléctrica con control de temperatura</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">39.99€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">55.99€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Tetera eléctrica con control de temperatura',39.99)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Espumador de leche manual',18.5)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Espumador de leche manual</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">18.50€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">25.90€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Espumador de leche manual',18.5)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Termómetro digital de cocina',15.9)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Termómetro digital de cocina</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">15.90€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">22.26€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Termómetro digital de cocina',15.9)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Contenedor de almacenamiento al vacío',24.95)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Contenedor de almacenamiento al vacío</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">24.95€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">34.93€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Contenedor de almacenamiento al vacío',24.95)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Juego de cuchillos de cocina 5 piezas',49.99)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Juego de cuchillos de cocina 5 piezas</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">49.99€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">69.99€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Juego de cuchillos de cocina 5 piezas',49.99)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Molinillo de especias eléctrico',22.99)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Molinillo de especias eléctrico</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">22.99€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">32.19€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Molinillo de especias eléctrico',22.99)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div>
-            <div style="background:white;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.08);transition:transform .2s" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" onclick="showProduct('','Sartén antiadherente de cerámica',35.9)">
-              <div style="position:relative"><div style="height:200px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:60px">🛍️</div><span style="position:absolute;top:8px;left:8px;background:#f77f00;color:white;font-size:11px;font-weight:bold;padding:3px 8px;border-radius:20px">-29%</span></div>
-              <div style="padding:16px">
-                <h3 style="font-size:14px;font-weight:600;margin:0 0 8px;color:#222;line-height:1.3">Sartén antiadherente de cerámica</h3>
-                <div style="color:#f59e0b;margin-bottom:8px">★★★★☆ <span style="color:#999;font-size:12px">(15)</span></div>
-                <div style="display:flex;align-items:center;justify-content:space-between">
-                  <div><span style="font-size:22px;font-weight:900;color:#f77f00">35.90€</span> <span style="font-size:13px;color:#aaa;text-decoration:line-through">50.26€</span></div>
-                  <button onclick="event.stopPropagation();showProduct('','Sartén antiadherente de cerámica',35.9)" style="background:#f77f00;color:white;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:bold;font-size:12px">Comprar</button>
-                </div>
-              </div>
-            </div></div>
-</div>
-<div style="background:#2b2024;padding:48px 20px;text-align:center;margin-top:60px">
-  <div style="max-width:800px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;color:white">
-    <div><div style="font-size:36px">🚀</div><div style="font-weight:700">Envío Express</div><div style="opacity:.7;font-size:14px">24-48h</div></div>
-    <div><div style="font-size:36px">🔒</div><div style="font-weight:700">Pago Seguro</div><div style="opacity:.7;font-size:14px">SSL + Stripe</div></div>
-    <div><div style="font-size:36px">⭐</div><div style="font-weight:700">Calidad Premium</div><div style="opacity:.7;font-size:14px">Garantía 1 año</div></div>
-    <div><div style="font-size:36px">📞</div><div style="font-weight:700">Soporte 24/7</div><div style="opacity:.7;font-size:14px">Siempre aquí</div></div>
+<section class="products-section">
+  <h2 class="section-title">Nuestros Productos</h2>
+  <p class="section-sub">Gadgets de cocina inteligentes que transforman tu forma de cocinar.</p>
+  <div class="products-grid">
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <span class="badge">-33%</span>
+        <span class="badge-ship">🚚 Envío Gratis</span>
+        <img src="https://images.pexels.com/photos/5237903/pexels-photo-5237903.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Freidora de Aire Digital 5.5L" loading="lazy">
+      </div>
+      <div class="product-info">
+        <h3>Freidora de Aire Digital 5.5L</h3>
+        <div class="stars"><span class="star-icons">★★★★★</span> <span class="review-count">(127 opiniones)</span></div>
+        <p class="product-desc">Cocina con 85% menos aceite. Pantalla táctil con 8 programas. Cesta antiadherente apta lavavajillas. 1700W de potencia.</p>
+        <div class="features"><span class="feat">✓ 5.5L familiar</span><span class="feat">✓ 85% menos aceite</span><span class="feat">✓ 8 programas</span><span class="feat">✓ Lavavajillas</span><span class="feat">✓ 1700W</span></div>
+        <div class="price-row">
+          <div class="prices">
+            <span class="price">59.99€</span>
+            <span class="original">89.99€</span>
+          </div>
+          <a href="https://buy.stripe.com/5kQ7sL7vUeG451FepxefC1j" class="buy-btn" target="_blank" rel="noopener">🛒 Comprar Ahora</a>
+        </div>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <span class="badge">-30%</span>
+        <span class="badge-ship">🚚 Envío Gratis</span>
+        <img src="https://images.pexels.com/photos/6605163/pexels-photo-6605163.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Batidora de Mano Pro 1200W - 20 Velocidades" loading="lazy">
+      </div>
+      <div class="product-info">
+        <h3>Batidora de Mano Pro 1200W - 20 Velocidades</h3>
+        <div class="stars"><span class="star-icons">★★★★☆</span> <span class="review-count">(89 opiniones)</span></div>
+        <p class="product-desc">Motor 1200W con 20 velocidades + turbo. Pie de titanio anti-salpicaduras. Incluye: picadora 700ml, varillas y vaso 800ml.</p>
+        <div class="features"><span class="feat">✓ 1200W</span><span class="feat">✓ 20 velocidades</span><span class="feat">✓ Pie titanio</span><span class="feat">✓ 4 accesorios</span><span class="feat">✓ Anti-salpicaduras</span></div>
+        <div class="price-row">
+          <div class="prices">
+            <span class="price">34.99€</span>
+            <span class="original">49.99€</span>
+          </div>
+          <a href="https://buy.stripe.com/14A00j5nM0PealZchpefC1k" class="buy-btn" target="_blank" rel="noopener">🛒 Comprar Ahora</a>
+        </div>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <span class="badge">-29%</span>
+        <span class="badge-ship">🚚 Envío Gratis</span>
+        <img src="https://images.pexels.com/photos/5964491/pexels-photo-5964491.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Báscula Cocina Nutricional WiFi" loading="lazy">
+      </div>
+      <div class="product-info">
+        <h3>Báscula Cocina Nutricional WiFi</h3>
+        <div class="stars"><span class="star-icons">★★★★★</span> <span class="review-count">(203 opiniones)</span></div>
+        <p class="product-desc">Calcula calorías, proteínas, carbos y grasas automáticamente. Base de datos de 500K alimentos. App con recetas saludables.</p>
+        <div class="features"><span class="feat">✓ Nutricional</span><span class="feat">✓ 500K alimentos</span><span class="feat">✓ App recetas</span><span class="feat">✓ Precisión 1g</span><span class="feat">✓ USB recargable</span></div>
+        <div class="price-row">
+          <div class="prices">
+            <span class="price">24.99€</span>
+            <span class="original">34.99€</span>
+          </div>
+          <a href="https://buy.stripe.com/00w8wPdUi41qdyb4OXefC1l" class="buy-btn" target="_blank" rel="noopener">🛒 Comprar Ahora</a>
+        </div>
+      </div>
+    </div>
+    <div class="product-card">
+      <div class="product-img-wrap">
+        <span class="badge">-29%</span>
+        <span class="badge-ship">🚚 Envío Gratis</span>
+        <img src="https://images.pexels.com/photos/6755628/pexels-photo-6755628.jpeg?auto=compress&cs=tinysrgb&h=650&w=940" alt="Termómetro Cocina Bluetooth - Dual Sonda" loading="lazy">
+      </div>
+      <div class="product-info">
+        <h3>Termómetro Cocina Bluetooth - Dual Sonda</h3>
+        <div class="stars"><span class="star-icons">★★★★☆</span> <span class="review-count">(56 opiniones)</span></div>
+        <p class="product-desc">2 sondas simultáneas para carne y horno. Alertas por app cuando alcanza temperatura objetivo. Rango 0-300°C. Precisión ±0.5°C.</p>
+        <div class="features"><span class="feat">✓ Dual sonda</span><span class="feat">✓ Bluetooth</span><span class="feat">✓ Alertas app</span><span class="feat">✓ 0-300°C</span><span class="feat">✓ ±0.5°C</span></div>
+        <div class="price-row">
+          <div class="prices">
+            <span class="price">19.99€</span>
+            <span class="original">27.99€</span>
+          </div>
+          <a href="https://buy.stripe.com/bJecN55nMeG479NepxefC1m" class="buy-btn" target="_blank" rel="noopener">🛒 Comprar Ahora</a>
+        </div>
+      </div>
+    </div></div>
+</section>
+<section class="guarantees">
+  <div class="guar-grid">
+    <div class="guar-item"><div class="guar-icon">🚚</div><h4>Envío Gratis</h4><p>A toda España peninsular en 24-48h.</p></div>
+    <div class="guar-item"><div class="guar-icon">🔒</div><h4>Pago Seguro</h4><p>Stripe: tarjeta, Apple Pay, Google Pay.</p></div>
+    <div class="guar-item"><div class="guar-icon">↩️</div><h4>Devolución Fácil</h4><p>30 días, sin preguntas, 100% reembolso.</p></div>
+    <div class="guar-item"><div class="guar-icon">🛡️</div><h4>Garantía 2 Años</h4><p>Garantía completa del fabricante.</p></div>
   </div>
-</div>
-<footer style="padding:24px;text-align:center;color:#888;font-size:13px">
-  <p>© 2026 CocinaGadget · Potencia tu cocina con estilo y funcionalidad</p>
-  <p>Todos los precios incluyen IVA · Envío a toda España</p>
+</section>
+<footer>
+  <p style="margin-bottom:8px">© 2026 ChefTech · Todos los derechos reservados</p>
+  <p>Envíos a toda España 🇪🇸 · Pagos seguros con <a href="https://stripe.com" target="_blank">Stripe</a></p>
 </footer>
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h2 id="modal-title" style="font-size:20px;font-weight:800;margin-bottom:12px">Producto</h2>
-    <div style="font-size:36px;font-weight:900;color:#f77f00;margin:16px 0" id="modal-price">0€</div>
-    <p style="color:#666;margin-bottom:24px">Para realizar tu pedido, envíanos un email con el nombre del producto y tu dirección.</p>
-    <button onclick="sendOrder()" style="background:#f77f00;color:white;border:none;padding:14px 28px;border-radius:12px;cursor:pointer;font-weight:900;font-size:16px;width:100%">🛒 Pedir por Email</button>
-    <button onclick="document.getElementById('modal').classList.remove('active')" style="background:#f0f0f0;color:#666;border:none;padding:10px 24px;border-radius:8px;cursor:pointer;margin-top:10px;width:100%">Cancelar</button>
-  </div>
-</div>
-<script>
-let currentProduct = {};
-function showProduct(slug, name, price) {
-  currentProduct = {slug, name, price};
-  document.getElementById('modal-title').textContent = name;
-  document.getElementById('modal-price').textContent = price.toFixed(2) + '€';
-  document.getElementById('modal').classList.add('active');
-}
-function sendOrder() {
-  const body = encodeURIComponent('Hola! Quiero pedir: ' + currentProduct.name + ' (' + currentProduct.price + '€). Mi dirección de envío es: ');
-  window.open('mailto:pedidos@cocina-pro.es?subject=Pedido: ' + encodeURIComponent(currentProduct.name) + '&body=' + body, '_blank');
-  document.getElementById('modal').classList.remove('active');
-}
-</script>
 </body>
 </html>
