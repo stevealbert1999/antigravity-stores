@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://stevealbert1999.github.io/antigravity-stores/sitemap.xml
+
+# ANTIGRAVITY Dropshipping Stores
+# 10 tiendas optimizadas para SEO
