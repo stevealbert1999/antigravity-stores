@@ -26,7 +26,12 @@ def get_connection():
 
 
 def placeholders(count: int):
-    return ", ".join(["%s"] * count) if USE_POSTGRES else ", ".join(["?"] * count)
+    token = "%s" if USE_POSTGRES else "?"
+    return ", ".join([token] * count)
+
+
+def bind_token():
+    return "%s" if USE_POSTGRES else "?"
 
 
 def init_db():
@@ -34,7 +39,7 @@ def init_db():
     cur = conn.cursor()
     audit_id = "SERIAL PRIMARY KEY" if USE_POSTGRES else "INTEGER PRIMARY KEY AUTOINCREMENT"
     cur.execute(
-        f"""
+        """
         CREATE TABLE IF NOT EXISTS invoice_results (
             invoice_id TEXT PRIMARY KEY,
             vendor TEXT NOT NULL,
@@ -93,11 +98,21 @@ def upsert_invoice_result(result: Dict[str, Any]):
             approval_status=excluded.approval_status,
             analyzed_at=excluded.analyzed_at
     """.format(values=placeholders(10))
-    conn.execute(sql, (
-        result["invoice_id"], result["vendor"], result["amount"], result["risk"],
-        result["risk_score"], ",".join(result["reasons"]), result["recommendation"],
-        int(result["requires_human_approval"]), result["approval_status"], result["analyzed_at"]
-    ))
+    conn.execute(
+        sql,
+        (
+            result["invoice_id"],
+            result["vendor"],
+            result["amount"],
+            result["risk"],
+            result["risk_score"],
+            ",".join(result["reasons"]),
+            result["recommendation"],
+            int(result["requires_human_approval"]),
+            result["approval_status"],
+            result["analyzed_at"],
+        ),
+    )
     conn.commit()
     conn.close()
 
@@ -117,7 +132,8 @@ def list_invoice_results() -> List[Dict[str, Any]]:
 
 def get_invoice_result(invoice_id: str):
     conn = get_connection()
-    row = conn.execute("SELECT * FROM invoice_results WHERE invoice_id = " + ("%s" if USE_POSTGRES else "?"), (invoice_id,)).fetchone()
+    sql = f"SELECT * FROM invoice_results WHERE invoice_id = {bind_token()}"
+    row = conn.execute(sql, (invoice_id,)).fetchone()
     conn.close()
     if not row:
         return None
@@ -129,10 +145,10 @@ def get_invoice_result(invoice_id: str):
 
 def insert_audit_event(event: str, invoice_id: str, payload: str, created_at: str):
     conn = get_connection()
-    conn.execute(
-        "INSERT INTO audit_log (event, invoice_id, payload, created_at) VALUES (" + placeholders(4) + ")",
-        (event, invoice_id, payload, created_at)
+    sql = "INSERT INTO audit_log (event, invoice_id, payload, created_at) VALUES ({values})".format(
+        values=placeholders(4)
     )
+    conn.execute(sql, (event, invoice_id, payload, created_at))
     conn.commit()
     conn.close()
 
@@ -156,9 +172,10 @@ def upsert_approval(invoice_id: str, status: str, user: str, comment: str, times
             timestamp=excluded.timestamp
     """.format(values=placeholders(5))
     conn.execute(sql, (invoice_id, status, user, comment, timestamp))
-    conn.execute(
-        "UPDATE invoice_results SET approval_status = " + ("%s" if USE_POSTGRES else "?") + " WHERE invoice_id = " + ("%s" if USE_POSTGRES else "?"),
-        (status, invoice_id)
+    update_sql = (
+        f"UPDATE invoice_results SET approval_status = {bind_token()} "
+        f"WHERE invoice_id = {bind_token()}"
     )
+    conn.execute(update_sql, (status, invoice_id))
     conn.commit()
     conn.close()
