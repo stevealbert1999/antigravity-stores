@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeakGuard AI — Financial Leak Detector</title>
+  <meta name="description" content="Sube un CSV financiero y encuentra fugas de dinero, duplicados, suscripciones y gastos anómalos en segundos." />
+  <style>
+    :root{--bg:#f6f8fb;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#dbe3ef;--dark:#0f172a;--green:#16a34a;--red:#dc2626;--amber:#d97706;--blue:#2563eb;--shadow:0 18px 55px rgba(15,23,42,.10)}
+    *{box-sizing:border-box}body{margin:0;background:linear-gradient(180deg,#eef4ff 0,#f8fafc 44%,#fff 100%);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+    main{max-width:1160px;margin:auto;padding:28px 18px 56px}.nav{display:flex;justify-content:space-between;align-items:center;margin-bottom:48px}.brand{display:flex;gap:10px;align-items:center;font-weight:950;font-size:20px;letter-spacing:-.04em}.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#0f172a,#2563eb);color:#fff;display:grid;place-items:center;box-shadow:0 12px 28px rgba(37,99,235,.25)}.pill{display:inline-flex;background:#dcfce7;color:#166534;border:1px solid #bbf7d0;border-radius:999px;padding:7px 11px;font-size:13px;font-weight:850}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center}.h1{font-size:58px;line-height:.98;letter-spacing:-.065em;margin:18px 0}.sub{font-size:20px;line-height:1.55;color:var(--muted);max-width:760px}.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}.btn{border:0;background:#0f172a;color:#fff;border-radius:14px;padding:14px 18px;font-weight:900;font-size:16px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}.btn.secondary{background:#fff;color:#0f172a;border:1px solid var(--line)}.mock,.card{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);padding:24px}.metric{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:32px 0}.stat{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}.stat b{display:block;font-size:30px;letter-spacing:-.04em}.stat span,.muted{color:var(--muted)}.section-title{font-size:36px;letter-spacing:-.045em;margin:46px 0 12px}.upload{border:2px dashed #cbd5e1;background:#f8fafc;border-radius:22px;padding:28px;text-align:center}.upload input{display:none}.upload label{display:block;cursor:pointer}.small{font-size:13px;color:var(--muted)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.result-hero{background:linear-gradient(135deg,#ecfdf5,#eff6ff);border:1px solid #bbf7d0;border-radius:24px;padding:24px;margin-top:18px}.big{font-size:52px;font-weight:950;color:#166534;letter-spacing:-.06em;margin:5px 0}.badges{display:flex;gap:8px;flex-wrap:wrap}.badge{display:inline-flex;border-radius:999px;padding:6px 10px;font-size:12px;font-weight:900}.red{background:#fee2e2;color:#991b1b}.amber{background:#fef3c7;color:#92400e}.green{background:#dcfce7;color:#166534}.blue{background:#dbeafe;color:#1e40af}table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:18px;overflow:hidden}th,td{text-align:left;padding:14px;border-bottom:1px solid #edf2f7;font-size:14px;vertical-align:top}th{background:#f8fafc;color:#475569;text-transform:uppercase;font-size:12px;letter-spacing:.05em}.table-wrap{overflow:auto}.hidden{display:none}.error{display:none;background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:14px;padding:12px;margin-top:14px}.sample{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;background:#0f172a;color:#dbeafe;border-radius:16px;padding:16px;overflow:auto;font-size:13px}.footer{margin-top:32px;color:var(--muted);text-align:center;font-size:14px}@media(max-width:850px){main{padding:22px 16px 44px}.hero,.grid,.metric{grid-template-columns:1fr}.h1{font-size:40px}.sub{font-size:18px}.big{font-size:38px}.nav{margin-bottom:30px}}
+  </style>
+</head>
+<body>
+<main>
+  <nav class="nav"><div class="brand"><div class="logo">€</div><span>LeakGuard AI</span></div><a class="btn secondary" href="#upload">Analizar CSV</a></nav>
+
+  <section class="hero">
+    <div>
+      <span class="pill">Self-serve · Financial leak detector</span>
+      <h1 class="h1">Encuentra dinero perdido en tus gastos en 60 segundos</h1>
+      <p class="sub">Sube un CSV financiero y detecta pagos duplicados, suscripciones recurrentes, vendors caros, gastos anómalos y fugas mensuales estimadas. Sin llamadas. Sin integración bancaria. Valor inmediato.</p>
+      <div class="cta"><a class="btn" href="#upload">Subir CSV gratis</a><button class="btn secondary" type="button" onclick="loadSample()">Cargar ejemplo</button></div>
+    </div>
+    <div class="mock">
+      <span class="badge green">Reporte instantáneo</span>
+      <h2>Potencial recuperable</h2>
+      <div class="big">4.280 €/mes</div>
+      <p class="muted">Ejemplo: duplicados, SaaS recurrente y anomalías de gasto detectadas automáticamente.</p>
+      <div class="badges"><span class="badge red">Duplicados</span><span class="badge amber">Spikes</span><span class="badge blue">Suscripciones</span></div>
+    </div>
+  </section>
+
+  <section class="metric">
+    <div class="stat"><b>&lt;60s</b><span>primer análisis.</span></div>
+    <div class="stat"><b>CSV</b><span>sin conexión bancaria inicial.</span></div>
+    <div class="stat"><b>€</b><span>resultado expresado en dinero.</span></div>
+  </section>
+
+  <h2 id="upload" class="section-title">Analizador financiero</h2>
+  <section class="grid">
+    <div class="card">
+      <h2>Sube CSV</h2>
+      <p class="muted">Columnas recomendadas: date, vendor, description, amount, currency, category.</p>
+      <div class="upload">
+        <label for="csvFile"><b>Seleccionar CSV</b><br><span class="small">o usa el ejemplo incluido</span></label>
+        <input id="csvFile" type="file" accept=".csv,text/csv" />
+      </div>
+      <div class="error" id="errorBox"></div>
+      <h3>Formato ejemplo</h3>
+      <pre class="sample">date,vendor,description,amount,currency,category
+2026-01-01,Adobe,Creative Cloud,89,EUR,Software
+2026-01-02,AWS,Cloud invoice,850,EUR,Cloud
+2026-01-03,Adobe,Creative Cloud duplicate,89,EUR,Software</pre>
+    </div>
+    <div class="card">
+      <h2>Resultado</h2>
+      <div id="emptyState"><p class="muted">Sube un CSV o carga el ejemplo para ver fugas financieras detectadas.</p></div>
+      <div id="summary" class="hidden"></div>
+    </div>
+  </section>
+
+  <section id="tables" class="hidden">
+    <h2 class="section-title">Fugas detectadas</h2>
+    <div class="table-wrap"><table><thead><tr><th>Tipo</th><th>Vendor</th><th>Impacto estimado</th><th>Motivo</th><th>Acción</th></tr></thead><tbody id="leakRows"></tbody></table></div>
+    <div class="cta"><button class="btn" type="button" onclick="downloadReport()">Descargar reporte</button><a class="btn secondary" href="mailto:9hhmb2wr7b@privaterelay.appleid.com?subject=LeakGuard%20AI%20Pilot">Quiero piloto</a></div>
+  </section>
+
+  <p class="footer">MVP local en navegador. No sube datos a servidores. La versión de pago añade reportes guardados, monitorización y alertas.</p>
+</main>
+<script>
+const sampleCsv=`date,vendor,description,amount,currency,category
+2026-01-01,Adobe,Creative Cloud,89,EUR,Software
+2026-01-02,AWS,Cloud invoice,850,EUR,Cloud
+2026-01-03,Adobe,Creative Cloud duplicate,89,EUR,Software
+2026-01-05,Slack,Monthly plan,240,EUR,Software
+2026-01-08,Notion,Workspace,120,EUR,Software
+2026-01-11,AWS,Cloud invoice spike,2400,EUR,Cloud
+2026-01-12,Unknown Vendor 882,Manual charge,670,EUR,Other
+2026-01-18,Slack,Monthly plan,240,EUR,Software
+2026-01-20,HubSpot,CRM,600,EUR,Software
+2026-01-21,HubSpot,CRM duplicate,600,EUR,Software
+2026-02-01,Adobe,Creative Cloud,89,EUR,Software
+2026-02-02,AWS,Cloud invoice,920,EUR,Cloud
+2026-02-05,Slack,Monthly plan,240,EUR,Software
+2026-02-08,Notion,Workspace,120,EUR,Software
+2026-02-20,HubSpot,CRM,600,EUR,Software`;
+let lastReport=null;
+function parseCsv(text){const lines=text.trim().split(/\r?\n/).filter(Boolean); if(lines.length<2) throw new Error('CSV vacío o sin filas.'); const headers=lines[0].split(',').map(h=>h.trim().toLowerCase()); const rows=lines.slice(1).map(line=>{const cells=line.split(',').map(c=>c.trim()); const obj={}; headers.forEach((h,i)=>obj[h]=cells[i]||''); obj.amount=Number(String(obj.amount||'0').replace(/[^0-9.-]/g,'')); obj.vendor=(obj.vendor||obj.merchant||obj.payee||'Unknown').trim(); obj.description=(obj.description||'').trim(); obj.currency=obj.currency||'EUR'; return obj;}); return rows.filter(r=>r.vendor&&Number.isFinite(r.amount));}
+function money(n,c='EUR'){return Math.round(n).toLocaleString('es-ES')+' '+(c==='EUR'?'€':c)}
+function analyze(rows){const leaks=[]; const byVendor={}; rows.forEach(r=>{const k=r.vendor.toLowerCase(); (byVendor[k] ||= {vendor:r.vendor,total:0,count:0,amounts:[],rows:[]}); byVendor[k].total+=Math.abs(r.amount); byVendor[k].count++; byVendor[k].amounts.push(Math.abs(r.amount)); byVendor[k].rows.push(r);});
+ const currency=rows[0]?.currency||'EUR'; const total=rows.reduce((s,r)=>s+Math.abs(r.amount),0);
+ Object.values(byVendor).forEach(v=>{const seen={}; v.rows.forEach(r=>{const key=Math.round(Math.abs(r.amount)*100)/100; seen[key]=(seen[key]||0)+1;}); Object.entries(seen).forEach(([amount,count])=>{if(count>=2 && Number(amount)>50){leaks.push({type:'Duplicado probable',vendor:v.vendor,impact:Number(amount)*(count-1),reason:`${count} cargos similares de ${money(Number(amount),currency)}`,action:'Revisar facturas y solicitar abono si procede'});}});});
+ Object.values(byVendor).forEach(v=>{if(v.count>=3){const avg=v.total/v.count; if(avg>30){leaks.push({type:'Suscripción recurrente',vendor:v.vendor,impact:avg,reason:`${v.count} cargos recurrentes detectados`,action:'Validar uso real, plan contratado y owner interno'});}}});
+ Object.values(byVendor).forEach(v=>{const avg=v.total/v.count; const max=Math.max(...v.amounts); if(v.count>=2 && max>avg*1.8 && max>300){leaks.push({type:'Spike de gasto',vendor:v.vendor,impact:max-avg,reason:`cargo máximo ${money(max,currency)} frente a media ${money(avg,currency)}`,action:'Investigar variación y límites presupuestarios'});}});
+ Object.values(byVendor).forEach(v=>{if(/unknown|manual|vendor|misc|otros/i.test(v.vendor) || (v.count===1 && v.total>500)){leaks.push({type:'Vendor sospechoso',vendor:v.vendor,impact:Math.min(v.total, v.total*.35),reason:'vendor poco claro o cargo aislado relevante',action:'Exigir factura, owner y justificación'});}});
+ Object.values(byVendor).forEach(v=>{if(v.total>total*.25 && v.total>1000){leaks.push({type:'Concentración de gasto',vendor:v.vendor,impact:v.total*.08,reason:`representa ${Math.round(v.total/total*100)}% del gasto analizado`,action:'Renegociar contrato o comparar alternativas'});}});
+ const monthlyEstimate=leaks.reduce((s,l)=>s+Math.max(0,l.impact),0); return {currency,total,rows:rows.length,leaks,monthlyEstimate};}
+function render(report){lastReport=report; document.getElementById('emptyState').classList.add('hidden'); document.getElementById('summary').classList.remove('hidden'); document.getElementById('tables').classList.remove('hidden'); document.getElementById('summary').innerHTML=`<div class="result-hero"><span class="badge green">Ahorro potencial estimado</span><div class="big">${money(report.monthlyEstimate,report.currency)}</div><p>${report.leaks.length} fugas o señales detectadas sobre ${report.rows} transacciones analizadas.</p></div>`; const tbody=document.getElementById('leakRows'); tbody.innerHTML=report.leaks.length?report.leaks.sort((a,b)=>b.impact-a.impact).map(l=>`<tr><td><span class="badge ${l.type.includes('Duplicado')?'red':l.type.includes('Spike')?'amber':'blue'}">${l.type}</span></td><td><b>${escapeHtml(l.vendor)}</b></td><td>${money(l.impact,report.currency)}</td><td>${escapeHtml(l.reason)}</td><td>${escapeHtml(l.action)}</td></tr>`).join(''):`<tr><td colspan="5">No se han detectado fugas claras. Revisa el formato o sube más histórico.</td></tr>`;}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function handleText(text){try{document.getElementById('errorBox').style.display='none'; const rows=parseCsv(text); render(analyze(rows));}catch(e){const box=document.getElementById('errorBox'); box.style.display='block'; box.textContent=e.message;}}
+function loadSample(){handleText(sampleCsv)}
+document.getElementById('csvFile').addEventListener('change',e=>{const file=e.target.files[0]; if(!file)return; const reader=new FileReader(); reader.onload=()=>handleText(reader.result); reader.readAsText(file);});
+function downloadReport(){if(!lastReport)return; const lines=['LeakGuard AI — Financial Leak Report','',`Ahorro potencial estimado: ${money(lastReport.monthlyEstimate,lastReport.currency)}`,`Transacciones analizadas: ${lastReport.rows}`,`Señales detectadas: ${lastReport.leaks.length}`,'','Detalle:']; lastReport.leaks.forEach((l,i)=>{lines.push(`${i+1}. ${l.type} — ${l.vendor} — ${money(l.impact,lastReport.currency)}`); lines.push(`   Motivo: ${l.reason}`); lines.push(`   Acción: ${l.action}`);}); const blob=new Blob([lines.join('\n')],{type:'text/plain'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='leakguard-report.txt'; a.click(); URL.revokeObjectURL(url);}
+</script>
+</body>
+</html>
