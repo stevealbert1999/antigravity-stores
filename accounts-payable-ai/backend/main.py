@@ -4,19 +4,19 @@ import json
 from datetime import datetime
 from typing import List
 
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
+from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from auth import require_api_key, require_user, verify_login
 from db import (
-    init_db,
-    upsert_invoice_result,
-    list_invoice_results,
     get_invoice_result,
+    init_db,
     insert_audit_event,
     list_audit_events,
+    list_invoice_results,
     upsert_approval,
+    upsert_invoice_result,
 )
 
 app = FastAPI(title="LedgerGuard AI API")
@@ -105,7 +105,7 @@ def analyze_invoice(invoice: Invoice, actor: dict):
         "recommendation": recommendation,
         "requires_human_approval": True,
         "approval_status": "pending",
-        "analyzed_at": datetime.utcnow().isoformat()
+        "analyzed_at": datetime.utcnow().isoformat(),
     }
 
     upsert_invoice_result(result)
@@ -113,14 +113,24 @@ def analyze_invoice(invoice: Invoice, actor: dict):
         event="invoice_analyzed",
         invoice_id=invoice.invoice_id,
         payload=json.dumps({"actor": actor, "result": result}),
-        created_at=result["analyzed_at"]
+        created_at=result["analyzed_at"],
     )
     return result
 
 
 @app.get("/")
 def root():
-    return {"product": "LedgerGuard AI", "status": "running", "database": "sqlite_or_postgres", "auth": "bearer_or_api_key"}
+    return {
+        "product": "LedgerGuard AI",
+        "status": "running",
+        "database": "sqlite_or_postgres",
+        "auth": "bearer_or_api_key",
+    }
+
+
+@app.get("/health")
+def health():
+    return {"status": "ok", "product": "LedgerGuard AI"}
 
 
 @app.post("/auth/login")
@@ -133,7 +143,13 @@ def login(request: LoginRequest):
 
 @app.get("/auth/me")
 def me(user=Depends(require_user)):
-    return {"user": {"email": user["email"], "role": user["role"], "tenant_id": user["tenant_id"]}}
+    return {
+        "user": {
+            "email": user["email"],
+            "role": user["role"],
+            "tenant_id": user["tenant_id"],
+        }
+    }
 
 
 @app.post("/invoices/analyze")
@@ -200,9 +216,26 @@ def approve_invoice(invoice_id: str, request: ApprovalRequest, user=Depends(requ
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
     timestamp = datetime.utcnow().isoformat()
-    approval = {"invoice_id": invoice_id, "status": "approved", "user": user["email"], "comment": request.comment, "timestamp": timestamp}
-    upsert_approval(invoice_id=invoice_id, status="approved", user=user["email"], comment=request.comment, timestamp=timestamp)
-    insert_audit_event(event="invoice_approved", invoice_id=invoice_id, payload=json.dumps({"actor": user, "approval": approval}), created_at=timestamp)
+    approval = {
+        "invoice_id": invoice_id,
+        "status": "approved",
+        "user": user["email"],
+        "comment": request.comment,
+        "timestamp": timestamp,
+    }
+    upsert_approval(
+        invoice_id=invoice_id,
+        status="approved",
+        user=user["email"],
+        comment=request.comment,
+        timestamp=timestamp,
+    )
+    insert_audit_event(
+        event="invoice_approved",
+        invoice_id=invoice_id,
+        payload=json.dumps({"actor": user, "approval": approval}),
+        created_at=timestamp,
+    )
     return approval
 
 
@@ -212,9 +245,26 @@ def reject_invoice(invoice_id: str, request: ApprovalRequest, user=Depends(requi
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
     timestamp = datetime.utcnow().isoformat()
-    approval = {"invoice_id": invoice_id, "status": "rejected", "user": user["email"], "comment": request.comment, "timestamp": timestamp}
-    upsert_approval(invoice_id=invoice_id, status="rejected", user=user["email"], comment=request.comment, timestamp=timestamp)
-    insert_audit_event(event="invoice_rejected", invoice_id=invoice_id, payload=json.dumps({"actor": user, "approval": approval}), created_at=timestamp)
+    approval = {
+        "invoice_id": invoice_id,
+        "status": "rejected",
+        "user": user["email"],
+        "comment": request.comment,
+        "timestamp": timestamp,
+    }
+    upsert_approval(
+        invoice_id=invoice_id,
+        status="rejected",
+        user=user["email"],
+        comment=request.comment,
+        timestamp=timestamp,
+    )
+    insert_audit_event(
+        event="invoice_rejected",
+        invoice_id=invoice_id,
+        payload=json.dumps({"actor": user, "approval": approval}),
+        created_at=timestamp,
+    )
     return approval
 
 
