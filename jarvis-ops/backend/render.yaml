@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: jarvis-ops-api
+    env: docker
+    plan: free
+    rootDir: jarvis-ops/backend
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: SHOPIFY_API_KEY
+        sync: false
+      - key: SHOPIFY_API_SECRET
+        sync: false
+      - key: SLACK_WEBHOOK_URL
+        sync: false
