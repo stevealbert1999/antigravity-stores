@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Jarvis Ops — AI para soporte ecommerce</title>
   <style>
-    :root { --bg:#0f172a; --card:#111827; --line:#334155; --text:#e5e7eb; --muted:#cbd5e1; --accent:#38bdf8; --accent2:#a5f3fc; }
+    :root { --bg:#0f172a; --card:#111827; --line:#334155; --text:#e5e7eb; --muted:#cbd5e1; --accent:#38bdf8; --accent2:#a5f3fc; --green:#22c55e; }
     body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; margin:0; background:var(--bg); color:var(--text); }
     main { max-width:1100px; margin:0 auto; padding:42px 20px; }
     .pill { display:inline-block; background:#164e63; color:var(--accent2); border-radius:999px; padding:7px 12px; font-size:13px; margin-bottom:14px; }
@@ -15,8 +15,8 @@
     .cta { display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; }
     .btn { display:inline-block; text-decoration:none; background:var(--accent); color:#082f49; border-radius:12px; padding:13px 17px; font-weight:800; border:0; cursor:pointer; font-size:16px; }
     .btn.secondary { background:#1e293b; color:var(--text); border:1px solid var(--line); }
-    .metrics { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin:26px 0; }
-    .metric,.card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; }
+    .metrics,.calc-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin:26px 0; }
+    .metric,.card,.calculator { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; }
     .metric strong { display:block; font-size:28px; color:white; }
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
     label { display:block; margin:14px 0 6px; color:var(--muted); font-size:14px; }
@@ -28,8 +28,9 @@
     .step span { color:var(--muted); }
     .roi { margin-top:20px; background:#052e16; border:1px solid #166534; border-radius:16px; padding:18px; }
     .roi strong { color:#bbf7d0; }
+    .big-number { font-size:34px; font-weight:900; color:#bbf7d0; margin:6px 0; }
     .note { margin-top:28px; font-size:14px; color:#94a3b8; }
-    @media (max-width:800px) { .grid, .metrics { grid-template-columns:1fr; } h1 { font-size:34px; } .subtitle { font-size:17px; } main { padding:32px 18px; } }
+    @media (max-width:800px) { .grid, .metrics, .calc-grid { grid-template-columns:1fr; } h1 { font-size:34px; } .subtitle { font-size:17px; } main { padding:32px 18px; } }
   </style>
 </head>
 <body>
@@ -49,15 +50,29 @@
       <div class="card"><h2>Ticket entrante</h2><label>Email cliente</label><input id="email" value="client@example.com" /><label>Asunto</label><input id="subject" value="Where is my order?" /><label>Mensaje</label><textarea id="message">Hi, where is my order? I need tracking.</textarea><button id="processBtn" class="btn" type="button">Procesar ticket</button></div>
       <div class="card"><h2>Resultado del operador</h2><div id="output" class="result"><div class="step"><b>Esperando ticket</b><span>Pulsa “Procesar ticket” para ejecutar la demo.</span></div></div></div>
     </section>
+    <section class="calculator" id="roi">
+      <h2>Calculadora de ROI</h2>
+      <p>Introduce volumen realista de tickets para estimar si merece la pena un piloto.</p>
+      <div class="calc-grid">
+        <div><label>Tickets repetitivos por semana</label><input id="ticketsWeek" type="number" value="100" min="0" /></div>
+        <div><label>Minutos ahorrados por ticket</label><input id="minutesTicket" type="number" value="4" min="0" /></div>
+        <div><label>Coste hora soporte (€)</label><input id="hourCost" type="number" value="15" min="0" /></div>
+      </div>
+      <button id="calcBtn" class="btn" type="button">Calcular ahorro</button>
+      <div class="roi" id="roiOutput"><strong>Ahorro mensual estimado</strong><div class="big-number">400 €</div><p>26,7 horas ahorradas al mes con los valores actuales.</p></div>
+    </section>
     <section class="roi"><strong>Propuesta comercial:</strong><p>Un piloto de 30 días debe demostrar horas ahorradas, tickets repetitivos automatizables y reducción de carga operativa. Si no hay ROI medible, no hay producto.</p></section>
     <p class="note">Esta demo funciona sin backend para ser gratuita en GitHub Pages. La versión real conecta Shopify, Gmail/Zendesk, Slack y un sistema de logs.</p>
   </main>
   <script>
-    function esc(s){return String(s).replace(/[&<>'"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
+    function esc(s){return String(s).replace(/[&<>'\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];});}
     function classifyTicket(message){var text=message.toLowerCase(); if(text.indexOf('refund')>-1||text.indexOf('return')>-1||text.indexOf('devolución')>-1||text.indexOf('reembolso')>-1)return ['Solicitud de devolución/reembolso','refund_request']; if(text.indexOf('where is my order')>-1||text.indexOf('tracking')>-1||text.indexOf('pedido')>-1||text.indexOf('seguimiento')>-1)return ['Seguimiento de pedido','order_tracking']; if(text.indexOf('damaged')>-1||text.indexOf('broken')>-1||text.indexOf('roto')>-1||text.indexOf('dañado')>-1)return ['Producto dañado','damaged_product']; return ['Soporte general','general_support'];}
     function draftResponse(key){var r={refund_request:'Hemos recibido tu solicitud de reembolso/devolución. Nuestro equipo revisará el caso y te confirmará los siguientes pasos.',order_tracking:'Estamos revisando la información de seguimiento de tu pedido. Según el sistema, el pedido está en tránsito y te enviaremos una actualización en breve.',damaged_product:'Sentimos que el producto haya llegado dañado. Vamos a revisar opciones de reemplazo o compensación.',general_support:'Gracias por contactar con soporte. Estamos revisando tu solicitud y responderemos lo antes posible.'}; return r[key]||r.general_support;}
     function runDemo(){var email=document.getElementById('email').value; var subject=document.getElementById('subject').value; var message=document.getElementById('message').value; var c=classifyTicket(message+' '+subject); var response=draftResponse(c[1]); document.getElementById('output').innerHTML='<div class="step"><b>1. Categoría detectada</b><span>'+esc(c[0])+'</span></div><div class="step"><b>2. Contexto de pedido</b><span>Cliente: '+esc(email)+'<br>Último pedido: ORD-1001<br>Estado: en tránsito<br>Transportista: Demo Carrier</span></div><div class="step"><b>3. Respuesta sugerida</b><span>'+esc(response)+'</span></div><div class="step"><b>4. Estado</b><span>Pendiente de aprobación humana antes de enviar.</span></div><div class="step"><b>5. ROI estimado</b><span>4 minutos ahorrados en este ticket.</span></div>';}
+    function calcROI(){var tickets=Number(document.getElementById('ticketsWeek').value)||0; var minutes=Number(document.getElementById('minutesTicket').value)||0; var cost=Number(document.getElementById('hourCost').value)||0; var monthlyHours=(tickets*minutes*4)/60; var monthlySaving=monthlyHours*cost; document.getElementById('roiOutput').innerHTML='<strong>Ahorro mensual estimado</strong><div class="big-number">'+Math.round(monthlySaving).toLocaleString('es-ES')+' €</div><p>'+monthlyHours.toFixed(1).replace('.',',')+' horas ahorradas al mes con los valores actuales.</p>';}
     document.getElementById('processBtn').addEventListener('click', runDemo);
+    document.getElementById('calcBtn').addEventListener('click', calcROI);
+    calcROI();
   </script>
 </body>
 </html>
