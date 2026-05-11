@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jarvis Ops Demo</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; background: #0f172a; color: #e5e7eb; }
+    main { max-width: 1040px; margin: 0 auto; padding: 48px 20px; }
+    .hero { margin-bottom: 32px; }
+    h1 { font-size: 42px; margin: 0 0 12px; }
+    p { color: #cbd5e1; line-height: 1.6; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .card { background: #111827; border: 1px solid #334155; border-radius: 16px; padding: 20px; }
+    label { display: block; margin: 14px 0 6px; color: #cbd5e1; font-size: 14px; }
+    input, textarea { width: 100%; box-sizing: border-box; border: 1px solid #334155; background: #020617; color: #e5e7eb; border-radius: 10px; padding: 12px; font-size: 14px; }
+    textarea { min-height: 130px; resize: vertical; }
+    button { margin-top: 16px; background: #38bdf8; color: #082f49; border: 0; border-radius: 10px; padding: 12px 16px; font-weight: 700; cursor: pointer; }
+    pre { white-space: pre-wrap; background: #020617; border: 1px solid #334155; border-radius: 12px; padding: 16px; min-height: 260px; overflow: auto; }
+    .pill { display: inline-block; background: #164e63; color: #a5f3fc; border-radius: 999px; padding: 6px 10px; font-size: 13px; margin-bottom: 12px; }
+    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="hero">
+      <span class="pill">Demo gratuita en GitHub Pages</span>
+      <h1>Jarvis Ops</h1>
+      <p>Demo de operador IA para ecommerce: clasifica tickets, simula contexto de pedido, redacta respuesta y deja la acción pendiente de aprobación humana.</p>
+    </section>
+
+    <section class="grid">
+      <div class="card">
+        <h2>Ticket entrante</h2>
+        <label>Email cliente</label>
+        <input id="email" value="client@example.com" />
+        <label>Asunto</label>
+        <input id="subject" value="Where is my order?" />
+        <label>Mensaje</label>
+        <textarea id="message">Hi, where is my order? I need tracking.</textarea>
+        <button onclick="runDemo()">Procesar ticket</button>
+      </div>
+
+      <div class="card">
+        <h2>Resultado del operador</h2>
+        <pre id="output">Pulsa “Procesar ticket”.</pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function classifyTicket(message) {
+      const text = message.toLowerCase();
+      if (text.includes('refund') || text.includes('return') || text.includes('devolución') || text.includes('reembolso')) return 'refund_request';
+      if (text.includes('where is my order') || text.includes('tracking') || text.includes('pedido') || text.includes('seguimiento')) return 'order_tracking';
+      if (text.includes('damaged') || text.includes('broken') || text.includes('roto') || text.includes('dañado')) return 'damaged_product';
+      return 'general_support';
+    }
+
+    function draftResponse(category) {
+      const responses = {
+        refund_request: 'Hemos recibido tu solicitud de reembolso/devolución. Nuestro equipo revisará el caso y te confirmará los siguientes pasos.',
+        order_tracking: 'Estamos revisando la información de seguimiento de tu pedido y te enviaremos una actualización en breve.',
+        damaged_product: 'Sentimos que el producto haya llegado dañado. Vamos a revisar opciones de reemplazo o compensación.',
+        general_support: 'Gracias por contactar con soporte. Estamos revisando tu solicitud y responderemos lo antes posible.'
+      };
+      return responses[category] || responses.general_support;
+    }
+
+    function runDemo() {
+      const email = document.getElementById('email').value;
+      const subject = document.getElementById('subject').value;
+      const message = document.getElementById('message').value;
+      const category = classifyTicket(message + ' ' + subject);
+      const result = {
+        input: { customer_email: email, subject, message },
+        category,
+        order_context: {
+          customer_email: email,
+          last_order_id: 'ORD-1001',
+          status: 'in_transit',
+          carrier: 'Demo Carrier'
+        },
+        suggested_response: draftResponse(category),
+        requires_approval: true,
+        status: 'pending_human_approval',
+        estimated_time_saved_minutes: 4
+      };
+      document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+    }
+  </script>
+</body>
+</html>
