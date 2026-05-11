@@ -1,10 +1,12 @@
 import csv
 import io
 import json
+import os
 from datetime import datetime
 from typing import List
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Header, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from db import (
@@ -17,7 +19,17 @@ from db import (
     upsert_approval,
 )
 
+API_KEY = os.getenv("LEDGERGUARD_API_KEY", "dev-ledgerguard-key")
+
 app = FastAPI(title="LedgerGuard AI API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 init_db()
 
@@ -38,6 +50,12 @@ class InvoiceBatch(BaseModel):
 class ApprovalRequest(BaseModel):
     user: str
     comment: str = ""
+
+
+def require_api_key(x_api_key: str = Header(default="")):
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid or missing API key")
+    return True
 
 
 def parse_bool(value):
@@ -107,26 +125,20 @@ def analyze_invoice(invoice: Invoice):
 
 @app.get("/")
 def root():
-    return {
-        "product": "LedgerGuard AI",
-        "status": "running",
-        "database": "sqlite"
-    }
+    return {"product": "LedgerGuard AI", "status": "running", "database": "sqlite", "auth": "api_key"}
 
 
-@app.post("/invoices/analyze")
+@app.post("/invoices/analyze", dependencies=[Depends(require_api_key)])
 def analyze(invoice: Invoice):
     return analyze_invoice(invoice)
 
 
-@app.post("/invoices/batch-analyze")
+@app.post("/invoices/batch-analyze", dependencies=[Depends(require_api_key)])
 def batch_analyze(batch: InvoiceBatch):
-    return {
-        "results": [analyze_invoice(invoice) for invoice in batch.invoices]
-    }
+    return {"results": [analyze_invoice(invoice) for invoice in batch.invoices]}
 
 
-@app.post("/invoices/upload-csv")
+@app.post("/invoices/upload-csv", dependencies=[Depends(require_api_key)])
 async def upload_csv(file: UploadFile = File(...)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
@@ -152,111 +164,49 @@ async def upload_csv(file: UploadFile = File(...)):
         )
         results.append(analyze_invoice(invoice))
 
-    return {
-        "count": len(results),
-        "results": results
-    }
+    return {"count": len(results), "results": results}
 
 
-@app.get("/invoices/risk-queue")
+@app.get("/invoices/risk-queue", dependencies=[Depends(require_api_key)])
 def risk_queue():
     order = {"high": 0, "medium": 1, "low": 2}
-    results = sorted(
-        list_invoice_results(),
-        key=lambda x: (order.get(x["risk"], 9), -x["risk_score"])
-    )
-
-    return {
-        "count": len(results),
-        "results": results
-    }
+    results = sorted(list_invoice_results(), key=lambda x: (order.get(x["risk"], 9), -x["risk_score"]))
+    return {"count": len(results), "results": results}
 
 
-@app.get("/invoices/{invoice_id}")
+@app.get("/invoices/{invoice_id}", dependencies=[Depends(require_api_key)])
 def get_invoice(invoice_id: str):
     result = get_invoice_result(invoice_id)
-
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
-
     return result
 
 
-@app.post("/approvals/{invoice_id}/approve")
+@app.post("/approvals/{invoice_id}/approve", dependencies=[Depends(require_api_key)])
 def approve_invoice(invoice_id: str, request: ApprovalRequest):
     result = get_invoice_result(invoice_id)
-
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
-
     timestamp = datetime.utcnow().isoformat()
-
-    approval = {
-        "invoice_id": invoice_id,
-        "status": "approved",
-        "user": request.user,
-        "comment": request.comment,
-        "timestamp": timestamp
-    }
-
-    upsert_approval(
-        invoice_id=invoice_id,
-        status="approved",
-        user=request.user,
-        comment=request.comment,
-        timestamp=timestamp
-    )
-
-    insert_audit_event(
-        event="invoice_approved",
-        invoice_id=invoice_id,
-        payload=json.dumps(approval),
-        created_at=timestamp
-    )
-
+    approval = {"invoice_id": invoice_id, "status": "approved", "user": request.user, "comment": request.comment, "timestamp": timestamp}
+    upsert_approval(invoice_id=invoice_id, status="approved", user=request.user, comment=request.comment, timestamp=timestamp)
+    insert_audit_event(event="invoice_approved", invoice_id=invoice_id, payload=json.dumps(approval), created_at=timestamp)
     return approval
 
 
-@app.post("/approvals/{invoice_id}/reject")
+@app.post("/approvals/{invoice_id}/reject", dependencies=[Depends(require_api_key)])
 def reject_invoice(invoice_id: str, request: ApprovalRequest):
     result = get_invoice_result(invoice_id)
-
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
-
     timestamp = datetime.utcnow().isoformat()
-
-    approval = {
-        "invoice_id": invoice_id,
-        "status": "rejected",
-        "user": request.user,
-        "comment": request.comment,
-        "timestamp": timestamp
-    }
-
-    upsert_approval(
-        invoice_id=invoice_id,
-        status="rejected",
-        user=request.user,
-        comment=request.comment,
-        timestamp=timestamp
-    )
-
-    insert_audit_event(
-        event="invoice_rejected",
-        invoice_id=invoice_id,
-        payload=json.dumps(approval),
-        created_at=timestamp
-    )
-
+    approval = {"invoice_id": invoice_id, "status": "rejected", "user": request.user, "comment": request.comment, "timestamp": timestamp}
+    upsert_approval(invoice_id=invoice_id, status="rejected", user=request.user, comment=request.comment, timestamp=timestamp)
+    insert_audit_event(event="invoice_rejected", invoice_id=invoice_id, payload=json.dumps(approval), created_at=timestamp)
     return approval
 
 
-@app.get("/audit-log")
+@app.get("/audit-log", dependencies=[Depends(require_api_key)])
 def audit_log():
     events = list_audit_events()
-
-    return {
-        "entries": events,
-        "count": len(events)
-    }
+    return {"entries": events, "count": len(events)}
