@@ -1,21 +1,40 @@
+import os
 import sqlite3
 from pathlib import Path
 from typing import Any, Dict, List
 
+import psycopg
+from psycopg.rows import dict_row
+
+DATABASE_URL = os.getenv("DATABASE_URL", "")
+USE_POSTGRES = DATABASE_URL.startswith("postgres://") or DATABASE_URL.startswith("postgresql://")
 DB_PATH = Path(__file__).resolve().parent / "ledgerguard.db"
 
 
-def get_connection():
+def get_sqlite_connection():
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 
+def get_postgres_connection():
+    return psycopg.connect(DATABASE_URL, row_factory=dict_row)
+
+
+def get_connection():
+    return get_postgres_connection() if USE_POSTGRES else get_sqlite_connection()
+
+
+def placeholders(count: int):
+    return ", ".join(["%s"] * count) if USE_POSTGRES else ", ".join(["?"] * count)
+
+
 def init_db():
     conn = get_connection()
     cur = conn.cursor()
+    audit_id = "SERIAL PRIMARY KEY" if USE_POSTGRES else "INTEGER PRIMARY KEY AUTOINCREMENT"
     cur.execute(
-        """
+        f"""
         CREATE TABLE IF NOT EXISTS invoice_results (
             invoice_id TEXT PRIMARY KEY,
             vendor TEXT NOT NULL,
@@ -31,9 +50,9 @@ def init_db():
         """
     )
     cur.execute(
-        """
+        f"""
         CREATE TABLE IF NOT EXISTS audit_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id {audit_id},
             event TEXT NOT NULL,
             invoice_id TEXT,
             payload TEXT NOT NULL,
@@ -46,7 +65,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS approvals (
             invoice_id TEXT PRIMARY KEY,
             status TEXT NOT NULL,
-            user TEXT NOT NULL,
+            user_name TEXT NOT NULL,
             comment TEXT,
             timestamp TEXT NOT NULL
         )
@@ -58,12 +77,11 @@ def init_db():
 
 def upsert_invoice_result(result: Dict[str, Any]):
     conn = get_connection()
-    conn.execute(
-        """
+    sql = """
         INSERT INTO invoice_results (
             invoice_id, vendor, amount, risk, risk_score, reasons,
             recommendation, requires_human_approval, approval_status, analyzed_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES ({values})
         ON CONFLICT(invoice_id) DO UPDATE SET
             vendor=excluded.vendor,
             amount=excluded.amount,
@@ -74,13 +92,12 @@ def upsert_invoice_result(result: Dict[str, Any]):
             requires_human_approval=excluded.requires_human_approval,
             approval_status=excluded.approval_status,
             analyzed_at=excluded.analyzed_at
-        """,
-        (
-            result["invoice_id"], result["vendor"], result["amount"], result["risk"],
-            result["risk_score"], ",".join(result["reasons"]), result["recommendation"],
-            int(result["requires_human_approval"]), result["approval_status"], result["analyzed_at"]
-        )
-    )
+    """.format(values=placeholders(10))
+    conn.execute(sql, (
+        result["invoice_id"], result["vendor"], result["amount"], result["risk"],
+        result["risk_score"], ",".join(result["reasons"]), result["recommendation"],
+        int(result["requires_human_approval"]), result["approval_status"], result["analyzed_at"]
+    ))
     conn.commit()
     conn.close()
 
@@ -100,7 +117,7 @@ def list_invoice_results() -> List[Dict[str, Any]]:
 
 def get_invoice_result(invoice_id: str):
     conn = get_connection()
-    row = conn.execute("SELECT * FROM invoice_results WHERE invoice_id = ?", (invoice_id,)).fetchone()
+    row = conn.execute("SELECT * FROM invoice_results WHERE invoice_id = " + ("%s" if USE_POSTGRES else "?"), (invoice_id,)).fetchone()
     conn.close()
     if not row:
         return None
@@ -113,7 +130,7 @@ def get_invoice_result(invoice_id: str):
 def insert_audit_event(event: str, invoice_id: str, payload: str, created_at: str):
     conn = get_connection()
     conn.execute(
-        "INSERT INTO audit_log (event, invoice_id, payload, created_at) VALUES (?, ?, ?, ?)",
+        "INSERT INTO audit_log (event, invoice_id, payload, created_at) VALUES (" + placeholders(4) + ")",
         (event, invoice_id, payload, created_at)
     )
     conn.commit()
@@ -129,20 +146,18 @@ def list_audit_events() -> List[Dict[str, Any]]:
 
 def upsert_approval(invoice_id: str, status: str, user: str, comment: str, timestamp: str):
     conn = get_connection()
-    conn.execute(
-        """
-        INSERT INTO approvals (invoice_id, status, user, comment, timestamp)
-        VALUES (?, ?, ?, ?, ?)
+    sql = """
+        INSERT INTO approvals (invoice_id, status, user_name, comment, timestamp)
+        VALUES ({values})
         ON CONFLICT(invoice_id) DO UPDATE SET
             status=excluded.status,
-            user=excluded.user,
+            user_name=excluded.user_name,
             comment=excluded.comment,
             timestamp=excluded.timestamp
-        """,
-        (invoice_id, status, user, comment, timestamp)
-    )
+    """.format(values=placeholders(5))
+    conn.execute(sql, (invoice_id, status, user, comment, timestamp))
     conn.execute(
-        "UPDATE invoice_results SET approval_status = ? WHERE invoice_id = ?",
+        "UPDATE invoice_results SET approval_status = " + ("%s" if USE_POSTGRES else "?") + " WHERE invoice_id = " + ("%s" if USE_POSTGRES else "?"),
         (status, invoice_id)
     )
     conn.commit()
