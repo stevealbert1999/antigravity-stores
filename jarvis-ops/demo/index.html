@@ -3,33 +3,57 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Jarvis Ops Demo</title>
+  <title>Jarvis Ops — AI para soporte ecommerce</title>
   <style>
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; margin: 0; background: #0f172a; color: #e5e7eb; }
-    main { max-width: 1040px; margin: 0 auto; padding: 48px 20px; }
-    .hero { margin-bottom: 32px; }
-    h1 { font-size: 42px; margin: 0 0 12px; }
-    p { color: #cbd5e1; line-height: 1.6; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .card { background: #111827; border: 1px solid #334155; border-radius: 16px; padding: 20px; }
-    label { display: block; margin: 14px 0 6px; color: #cbd5e1; font-size: 14px; }
-    input, textarea { width: 100%; box-sizing: border-box; border: 1px solid #334155; background: #020617; color: #e5e7eb; border-radius: 10px; padding: 12px; font-size: 14px; }
-    textarea { min-height: 130px; resize: vertical; }
-    button { margin-top: 16px; background: #38bdf8; color: #082f49; border: 0; border-radius: 10px; padding: 12px 16px; font-weight: 700; cursor: pointer; }
-    pre { white-space: pre-wrap; background: #020617; border: 1px solid #334155; border-radius: 12px; padding: 16px; min-height: 260px; overflow: auto; }
-    .pill { display: inline-block; background: #164e63; color: #a5f3fc; border-radius: 999px; padding: 6px 10px; font-size: 13px; margin-bottom: 12px; }
-    @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+    :root { --bg:#0f172a; --card:#111827; --line:#334155; --text:#e5e7eb; --muted:#cbd5e1; --accent:#38bdf8; --accent2:#a5f3fc; }
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif; margin:0; background:var(--bg); color:var(--text); }
+    main { max-width:1100px; margin:0 auto; padding:42px 20px; }
+    .hero { margin-bottom:28px; }
+    .pill { display:inline-block; background:#164e63; color:var(--accent2); border-radius:999px; padding:7px 12px; font-size:13px; margin-bottom:14px; }
+    h1 { font-size:46px; line-height:1.05; margin:0 0 14px; letter-spacing:-1px; }
+    h2 { margin-top:0; }
+    p { color:var(--muted); line-height:1.6; }
+    .subtitle { font-size:20px; max-width:760px; }
+    .cta { display:flex; gap:12px; flex-wrap:wrap; margin-top:22px; }
+    .btn { display:inline-block; text-decoration:none; background:var(--accent); color:#082f49; border-radius:12px; padding:13px 17px; font-weight:800; border:0; cursor:pointer; }
+    .btn.secondary { background:#1e293b; color:var(--text); border:1px solid var(--line); }
+    .metrics { display:grid; grid-template-columns:repeat(3, 1fr); gap:14px; margin:26px 0; }
+    .metric { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:18px; }
+    .metric strong { display:block; font-size:28px; color:white; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:22px; }
+    label { display:block; margin:14px 0 6px; color:var(--muted); font-size:14px; }
+    input, textarea { width:100%; box-sizing:border-box; border:1px solid var(--line); background:#020617; color:var(--text); border-radius:12px; padding:13px; font-size:15px; }
+    textarea { min-height:130px; resize:vertical; }
+    .result { display:grid; gap:12px; }
+    .step { background:#020617; border:1px solid var(--line); border-radius:14px; padding:14px; }
+    .step b { display:block; margin-bottom:5px; color:white; }
+    .step span { color:var(--muted); }
+    .roi { margin-top:20px; background:#052e16; border:1px solid #166534; border-radius:16px; padding:18px; }
+    .roi strong { color:#bbf7d0; }
+    .note { margin-top:28px; font-size:14px; color:#94a3b8; }
+    @media (max-width:800px) { .grid, .metrics { grid-template-columns:1fr; } h1 { font-size:34px; } .subtitle { font-size:17px; } main { padding:32px 18px; } }
   </style>
 </head>
 <body>
   <main>
     <section class="hero">
-      <span class="pill">Demo gratuita en GitHub Pages</span>
-      <h1>Jarvis Ops</h1>
-      <p>Demo de operador IA para ecommerce: clasifica tickets, simula contexto de pedido, redacta respuesta y deja la acción pendiente de aprobación humana.</p>
+      <span class="pill">Demo pública · IA supervisada para ecommerce</span>
+      <h1>Automatiza soporte repetitivo sin perder control humano</h1>
+      <p class="subtitle">Jarvis Ops clasifica tickets, encuentra contexto de pedido, redacta respuestas y deja cada acción pendiente de aprobación antes de enviarla.</p>
+      <div class="cta">
+        <a class="btn" href="#demo">Probar demo</a>
+        <a class="btn secondary" href="mailto:9hhmb2wr7b@privaterelay.appleid.com?subject=Piloto%20Jarvis%20Ops">Solicitar piloto</a>
+      </div>
     </section>
 
-    <section class="grid">
+    <section class="metrics">
+      <div class="metric"><strong>4 min</strong><p>ahorro estimado por ticket repetitivo.</p></div>
+      <div class="metric"><strong>100 tickets</strong><p>equivalen a más de 6 horas ahorradas por semana.</p></div>
+      <div class="metric"><strong>Humano aprueba</strong><p>la IA propone; tu equipo decide.</p></div>
+    </section>
+
+    <section id="demo" class="grid">
       <div class="card">
         <h2>Ticket entrante</h2>
         <label>Email cliente</label>
@@ -38,55 +62,55 @@
         <input id="subject" value="Where is my order?" />
         <label>Mensaje</label>
         <textarea id="message">Hi, where is my order? I need tracking.</textarea>
-        <button onclick="runDemo()">Procesar ticket</button>
+        <button class="btn" onclick="runDemo()">Procesar ticket</button>
       </div>
 
       <div class="card">
         <h2>Resultado del operador</h2>
-        <pre id="output">Pulsa “Procesar ticket”.</pre>
+        <div id="output" class="result">
+          <div class="step"><b>Esperando ticket</b><span>Pulsa “Procesar ticket” para ejecutar la demo.</span></div>
+        </div>
       </div>
     </section>
+
+    <section class="roi">
+      <strong>Propuesta comercial:</strong>
+      <p>Un piloto de 30 días debe demostrar horas ahorradas, tickets repetitivos automatizables y reducción de carga operativa. Si no hay ROI medible, no hay producto.</p>
+    </section>
+
+    <p class="note">Esta demo funciona sin backend para ser gratuita en GitHub Pages. La versión real conecta Shopify, Gmail/Zendesk, Slack y un sistema de logs.</p>
   </main>
 
   <script>
     function classifyTicket(message) {
       const text = message.toLowerCase();
-      if (text.includes('refund') || text.includes('return') || text.includes('devolución') || text.includes('reembolso')) return 'refund_request';
-      if (text.includes('where is my order') || text.includes('tracking') || text.includes('pedido') || text.includes('seguimiento')) return 'order_tracking';
-      if (text.includes('damaged') || text.includes('broken') || text.includes('roto') || text.includes('dañado')) return 'damaged_product';
-      return 'general_support';
+      if (text.includes('refund') || text.includes('return') || text.includes('devolución') || text.includes('reembolso')) return ['Solicitud de devolución/reembolso', 'refund_request'];
+      if (text.includes('where is my order') || text.includes('tracking') || text.includes('pedido') || text.includes('seguimiento')) return ['Seguimiento de pedido', 'order_tracking'];
+      if (text.includes('damaged') || text.includes('broken') || text.includes('roto') || text.includes('dañado')) return ['Producto dañado', 'damaged_product'];
+      return ['Soporte general', 'general_support'];
     }
-
-    function draftResponse(category) {
+    function draftResponse(categoryKey) {
       const responses = {
         refund_request: 'Hemos recibido tu solicitud de reembolso/devolución. Nuestro equipo revisará el caso y te confirmará los siguientes pasos.',
-        order_tracking: 'Estamos revisando la información de seguimiento de tu pedido y te enviaremos una actualización en breve.',
+        order_tracking: 'Estamos revisando la información de seguimiento de tu pedido. Según el sistema, el pedido está en tránsito y te enviaremos una actualización en breve.',
         damaged_product: 'Sentimos que el producto haya llegado dañado. Vamos a revisar opciones de reemplazo o compensación.',
         general_support: 'Gracias por contactar con soporte. Estamos revisando tu solicitud y responderemos lo antes posible.'
       };
-      return responses[category] || responses.general_support;
+      return responses[categoryKey] || responses.general_support;
     }
-
     function runDemo() {
       const email = document.getElementById('email').value;
       const subject = document.getElementById('subject').value;
       const message = document.getElementById('message').value;
-      const category = classifyTicket(message + ' ' + subject);
-      const result = {
-        input: { customer_email: email, subject, message },
-        category,
-        order_context: {
-          customer_email: email,
-          last_order_id: 'ORD-1001',
-          status: 'in_transit',
-          carrier: 'Demo Carrier'
-        },
-        suggested_response: draftResponse(category),
-        requires_approval: true,
-        status: 'pending_human_approval',
-        estimated_time_saved_minutes: 4
-      };
-      document.getElementById('output').textContent = JSON.stringify(result, null, 2);
+      const [categoryLabel, categoryKey] = classifyTicket(message + ' ' + subject);
+      const response = draftResponse(categoryKey);
+      document.getElementById('output').innerHTML = `
+        <div class="step"><b>1. Categoría detectada</b><span>${categoryLabel}</span></div>
+        <div class="step"><b>2. Contexto de pedido</b><span>Cliente: ${email}<br>Último pedido: ORD-1001<br>Estado: en tránsito<br>Transportista: Demo Carrier</span></div>
+        <div class="step"><b>3. Respuesta sugerida</b><span>${response}</span></div>
+        <div class="step"><b>4. Estado</b><span>Pendiente de aprobación humana antes de enviar.</span></div>
+        <div class="step"><b>5. ROI estimado</b><span>4 minutos ahorrados en este ticket.</span></div>
+      `;
     }
   </script>
 </body>
