@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: ledgerguard-api
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: LEDGERGUARD_API_KEY
+        sync: false
