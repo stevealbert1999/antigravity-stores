@@ -1,14 +1,14 @@
 import csv
 import io
 import json
-import os
 from datetime import datetime
 from typing import List
 
-from fastapi import FastAPI, UploadFile, File, HTTPException, Header, Depends
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
+from auth import require_api_key, require_user, verify_login
 from db import (
     init_db,
     upsert_invoice_result,
@@ -18,8 +18,6 @@ from db import (
     list_audit_events,
     upsert_approval,
 )
-
-API_KEY = os.getenv("LEDGERGUARD_API_KEY", "dev-ledgerguard-key")
 
 app = FastAPI(title="LedgerGuard AI API")
 
@@ -32,6 +30,11 @@ app.add_middleware(
 )
 
 init_db()
+
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 
 class Invoice(BaseModel):
@@ -48,21 +51,14 @@ class InvoiceBatch(BaseModel):
 
 
 class ApprovalRequest(BaseModel):
-    user: str
     comment: str = ""
-
-
-def require_api_key(x_api_key: str = Header(default="")):
-    if x_api_key != API_KEY:
-        raise HTTPException(status_code=401, detail="Invalid or missing API key")
-    return True
 
 
 def parse_bool(value):
     return str(value).strip().lower() in {"true", "1", "yes", "y", "si", "sí"}
 
 
-def analyze_invoice(invoice: Invoice):
+def analyze_invoice(invoice: Invoice, actor: dict):
     risk = "low"
     score = 10
     reasons = []
@@ -116,30 +112,47 @@ def analyze_invoice(invoice: Invoice):
     insert_audit_event(
         event="invoice_analyzed",
         invoice_id=invoice.invoice_id,
-        payload=json.dumps(result),
+        payload=json.dumps({"actor": actor, "result": result}),
         created_at=result["analyzed_at"]
     )
-
     return result
 
 
 @app.get("/")
 def root():
-    return {"product": "LedgerGuard AI", "status": "running", "database": "sqlite", "auth": "api_key"}
+    return {"product": "LedgerGuard AI", "status": "running", "database": "sqlite_or_postgres", "auth": "bearer_or_api_key"}
 
 
-@app.post("/invoices/analyze", dependencies=[Depends(require_api_key)])
-def analyze(invoice: Invoice):
-    return analyze_invoice(invoice)
+@app.post("/auth/login")
+def login(request: LoginRequest):
+    session = verify_login(request.email, request.password)
+    if not session:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return session
 
 
-@app.post("/invoices/batch-analyze", dependencies=[Depends(require_api_key)])
-def batch_analyze(batch: InvoiceBatch):
-    return {"results": [analyze_invoice(invoice) for invoice in batch.invoices]}
+@app.get("/auth/me")
+def me(user=Depends(require_user)):
+    return {"user": {"email": user["email"], "role": user["role"], "tenant_id": user["tenant_id"]}}
 
 
-@app.post("/invoices/upload-csv", dependencies=[Depends(require_api_key)])
-async def upload_csv(file: UploadFile = File(...)):
+@app.post("/invoices/analyze")
+def analyze(invoice: Invoice, user=Depends(require_user)):
+    return analyze_invoice(invoice, actor=user)
+
+
+@app.post("/system/invoices/analyze")
+def system_analyze(invoice: Invoice, actor=Depends(require_api_key)):
+    return analyze_invoice(invoice, actor=actor)
+
+
+@app.post("/invoices/batch-analyze")
+def batch_analyze(batch: InvoiceBatch, user=Depends(require_user)):
+    return {"results": [analyze_invoice(invoice, actor=user) for invoice in batch.invoices]}
+
+
+@app.post("/invoices/upload-csv")
+async def upload_csv(file: UploadFile = File(...), user=Depends(require_user)):
     if not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="Only CSV files are supported")
 
@@ -152,7 +165,6 @@ async def upload_csv(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=f"CSV must include columns: {sorted(required)}")
 
     results = []
-
     for row in reader:
         invoice = Invoice(
             invoice_id=row["invoice_id"],
@@ -162,51 +174,51 @@ async def upload_csv(file: UploadFile = File(...)):
             po_match=parse_bool(row["po_match"]),
             duplicate_detected=parse_bool(row["duplicate_detected"]),
         )
-        results.append(analyze_invoice(invoice))
+        results.append(analyze_invoice(invoice, actor=user))
 
     return {"count": len(results), "results": results}
 
 
-@app.get("/invoices/risk-queue", dependencies=[Depends(require_api_key)])
-def risk_queue():
+@app.get("/invoices/risk-queue")
+def risk_queue(user=Depends(require_user)):
     order = {"high": 0, "medium": 1, "low": 2}
     results = sorted(list_invoice_results(), key=lambda x: (order.get(x["risk"], 9), -x["risk_score"]))
     return {"count": len(results), "results": results}
 
 
-@app.get("/invoices/{invoice_id}", dependencies=[Depends(require_api_key)])
-def get_invoice(invoice_id: str):
+@app.get("/invoices/{invoice_id}")
+def get_invoice(invoice_id: str, user=Depends(require_user)):
     result = get_invoice_result(invoice_id)
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
     return result
 
 
-@app.post("/approvals/{invoice_id}/approve", dependencies=[Depends(require_api_key)])
-def approve_invoice(invoice_id: str, request: ApprovalRequest):
+@app.post("/approvals/{invoice_id}/approve")
+def approve_invoice(invoice_id: str, request: ApprovalRequest, user=Depends(require_user)):
     result = get_invoice_result(invoice_id)
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
     timestamp = datetime.utcnow().isoformat()
-    approval = {"invoice_id": invoice_id, "status": "approved", "user": request.user, "comment": request.comment, "timestamp": timestamp}
-    upsert_approval(invoice_id=invoice_id, status="approved", user=request.user, comment=request.comment, timestamp=timestamp)
-    insert_audit_event(event="invoice_approved", invoice_id=invoice_id, payload=json.dumps(approval), created_at=timestamp)
+    approval = {"invoice_id": invoice_id, "status": "approved", "user": user["email"], "comment": request.comment, "timestamp": timestamp}
+    upsert_approval(invoice_id=invoice_id, status="approved", user=user["email"], comment=request.comment, timestamp=timestamp)
+    insert_audit_event(event="invoice_approved", invoice_id=invoice_id, payload=json.dumps({"actor": user, "approval": approval}), created_at=timestamp)
     return approval
 
 
-@app.post("/approvals/{invoice_id}/reject", dependencies=[Depends(require_api_key)])
-def reject_invoice(invoice_id: str, request: ApprovalRequest):
+@app.post("/approvals/{invoice_id}/reject")
+def reject_invoice(invoice_id: str, request: ApprovalRequest, user=Depends(require_user)):
     result = get_invoice_result(invoice_id)
     if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
     timestamp = datetime.utcnow().isoformat()
-    approval = {"invoice_id": invoice_id, "status": "rejected", "user": request.user, "comment": request.comment, "timestamp": timestamp}
-    upsert_approval(invoice_id=invoice_id, status="rejected", user=request.user, comment=request.comment, timestamp=timestamp)
-    insert_audit_event(event="invoice_rejected", invoice_id=invoice_id, payload=json.dumps(approval), created_at=timestamp)
+    approval = {"invoice_id": invoice_id, "status": "rejected", "user": user["email"], "comment": request.comment, "timestamp": timestamp}
+    upsert_approval(invoice_id=invoice_id, status="rejected", user=user["email"], comment=request.comment, timestamp=timestamp)
+    insert_audit_event(event="invoice_rejected", invoice_id=invoice_id, payload=json.dumps({"actor": user, "approval": approval}), created_at=timestamp)
     return approval
 
 
-@app.get("/audit-log", dependencies=[Depends(require_api_key)])
-def audit_log():
+@app.get("/audit-log")
+def audit_log(user=Depends(require_user)):
     events = list_audit_events()
     return {"entries": events, "count": len(events)}
