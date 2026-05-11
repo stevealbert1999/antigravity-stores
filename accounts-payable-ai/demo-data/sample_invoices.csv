@@ -1,0 +1,6 @@
+invoice_id,vendor,amount,due_days,po_match,duplicate_detected
+INV-1001,ACME Supplies,12500,-8,false,true
+INV-2032,DHL Express,3200,2,true,false
+INV-3310,OfficePro,890,-12,true,false
+INV-4412,CloudVendor,18500,5,false,false
+INV-5510,Logistics Partner,7600,1,true,true
