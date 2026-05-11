@@ -1,16 +1,25 @@
 import csv
 import io
+import json
 from datetime import datetime
-from typing import List, Dict
+from typing import List
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from pydantic import BaseModel
 
+from db import (
+    init_db,
+    upsert_invoice_result,
+    list_invoice_results,
+    get_invoice_result,
+    insert_audit_event,
+    list_audit_events,
+    upsert_approval,
+)
+
 app = FastAPI(title="LedgerGuard AI API")
 
-AUDIT_LOG = []
-INVOICE_RESULTS: Dict[str, dict] = {}
-APPROVALS: Dict[str, dict] = {}
+init_db()
 
 
 class Invoice(BaseModel):
@@ -85,15 +94,24 @@ def analyze_invoice(invoice: Invoice):
         "analyzed_at": datetime.utcnow().isoformat()
     }
 
-    INVOICE_RESULTS[invoice.invoice_id] = result
-    AUDIT_LOG.append({"event": "invoice_analyzed", **result})
+    upsert_invoice_result(result)
+    insert_audit_event(
+        event="invoice_analyzed",
+        invoice_id=invoice.invoice_id,
+        payload=json.dumps(result),
+        created_at=result["analyzed_at"]
+    )
 
     return result
 
 
 @app.get("/")
 def root():
-    return {"product": "LedgerGuard AI", "status": "running"}
+    return {
+        "product": "LedgerGuard AI",
+        "status": "running",
+        "database": "sqlite"
+    }
 
 
 @app.post("/invoices/analyze")
@@ -103,7 +121,9 @@ def analyze(invoice: Invoice):
 
 @app.post("/invoices/batch-analyze")
 def batch_analyze(batch: InvoiceBatch):
-    return {"results": [analyze_invoice(invoice) for invoice in batch.invoices]}
+    return {
+        "results": [analyze_invoice(invoice) for invoice in batch.invoices]
+    }
 
 
 @app.post("/invoices/upload-csv")
@@ -120,6 +140,7 @@ async def upload_csv(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail=f"CSV must include columns: {sorted(required)}")
 
     results = []
+
     for row in reader:
         invoice = Invoice(
             invoice_id=row["invoice_id"],
@@ -131,52 +152,111 @@ async def upload_csv(file: UploadFile = File(...)):
         )
         results.append(analyze_invoice(invoice))
 
-    return {"count": len(results), "results": results}
+    return {
+        "count": len(results),
+        "results": results
+    }
 
 
 @app.get("/invoices/risk-queue")
 def risk_queue():
     order = {"high": 0, "medium": 1, "low": 2}
-    results = sorted(INVOICE_RESULTS.values(), key=lambda x: (order.get(x["risk"], 9), -x["risk_score"]))
-    return {"count": len(results), "results": results}
+    results = sorted(
+        list_invoice_results(),
+        key=lambda x: (order.get(x["risk"], 9), -x["risk_score"])
+    )
+
+    return {
+        "count": len(results),
+        "results": results
+    }
+
+
+@app.get("/invoices/{invoice_id}")
+def get_invoice(invoice_id: str):
+    result = get_invoice_result(invoice_id)
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Invoice not found")
+
+    return result
 
 
 @app.post("/approvals/{invoice_id}/approve")
 def approve_invoice(invoice_id: str, request: ApprovalRequest):
-    if invoice_id not in INVOICE_RESULTS:
+    result = get_invoice_result(invoice_id)
+
+    if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
+
+    timestamp = datetime.utcnow().isoformat()
 
     approval = {
         "invoice_id": invoice_id,
         "status": "approved",
         "user": request.user,
         "comment": request.comment,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": timestamp
     }
-    APPROVALS[invoice_id] = approval
-    INVOICE_RESULTS[invoice_id]["approval_status"] = "approved"
-    AUDIT_LOG.append({"event": "invoice_approved", **approval})
+
+    upsert_approval(
+        invoice_id=invoice_id,
+        status="approved",
+        user=request.user,
+        comment=request.comment,
+        timestamp=timestamp
+    )
+
+    insert_audit_event(
+        event="invoice_approved",
+        invoice_id=invoice_id,
+        payload=json.dumps(approval),
+        created_at=timestamp
+    )
+
     return approval
 
 
 @app.post("/approvals/{invoice_id}/reject")
 def reject_invoice(invoice_id: str, request: ApprovalRequest):
-    if invoice_id not in INVOICE_RESULTS:
+    result = get_invoice_result(invoice_id)
+
+    if not result:
         raise HTTPException(status_code=404, detail="Invoice not found")
+
+    timestamp = datetime.utcnow().isoformat()
 
     approval = {
         "invoice_id": invoice_id,
         "status": "rejected",
         "user": request.user,
         "comment": request.comment,
-        "timestamp": datetime.utcnow().isoformat()
+        "timestamp": timestamp
     }
-    APPROVALS[invoice_id] = approval
-    INVOICE_RESULTS[invoice_id]["approval_status"] = "rejected"
-    AUDIT_LOG.append({"event": "invoice_rejected", **approval})
+
+    upsert_approval(
+        invoice_id=invoice_id,
+        status="rejected",
+        user=request.user,
+        comment=request.comment,
+        timestamp=timestamp
+    )
+
+    insert_audit_event(
+        event="invoice_rejected",
+        invoice_id=invoice_id,
+        payload=json.dumps(approval),
+        created_at=timestamp
+    )
+
     return approval
 
 
 @app.get("/audit-log")
 def audit_log():
-    return {"entries": AUDIT_LOG, "count": len(AUDIT_LOG)}
+    events = list_audit_events()
+
+    return {
+        "entries": events,
+        "count": len(events)
+    }
